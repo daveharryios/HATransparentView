@@ -39,6 +39,7 @@
 - (void)tapBackgroundToClose:(BOOL)close {
     if (close) {
         [self addTapGestureRecognizer];
+        [self addSlideGestureRecognizer];
     }
 }
 
@@ -132,15 +133,50 @@
     [self.delegate HATransparentViewDidClosed];
 }
 
+#pragma mark - Close Transparent View
+
+- (void)call {
+    // Animation
+    CATransition *viewOut = [CATransition animation];
+    [viewOut setDuration:0.3];
+    [viewOut setType:kCATransitionFade];
+    [viewOut setTimingFunction: [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [[self.superview layer] addAnimation:viewOut forKey:kCATransitionFade];
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:self.statusBarStyle];
+    [self removeFromSuperview];
+    
+    [self.delegate HATransparentViewDidCall];
+}
 #pragma mark - UITapGestureRecognizer
 
 - (void)addTapGestureRecognizer {
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(close:)];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(call)];
     [self addGestureRecognizer:tapGesture];
 }
 
 - (void)close:(UITapGestureRecognizer *)sender {
     [self close];
+}
+
+-(void)addSlideGestureRecognizer {
+    UISwipeGestureRecognizer *gestureRecognizerRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeHandler:)];
+    [gestureRecognizerRight setDirection:(UISwipeGestureRecognizerDirectionRight)];
+    
+    UISwipeGestureRecognizer *gestureRecognizerLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeHandler:)];
+    
+    [gestureRecognizerLeft setDirection:(UISwipeGestureRecognizerDirectionLeft)];
+    [self addGestureRecognizer:gestureRecognizerRight];
+    [self addGestureRecognizer:gestureRecognizerLeft];
+    
+    
+}
+
+-(void)swipeHandler:(UISwipeGestureRecognizer *)recognizer {
+    NSLog(@"Swipe received.");
+   
+     [self close];
+    
 }
 
 @end
