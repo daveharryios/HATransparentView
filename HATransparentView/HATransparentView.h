@@ -16,6 +16,8 @@ typedef NS_ENUM(NSInteger, HAStyle) {
 @protocol HATransparentViewDelegate <NSObject>
 @optional
 - (void)HATransparentViewDidClosed;
+- (void)HATransparentViewDidCall;
+
 @end
 
 @interface HATransparentView : UIView
